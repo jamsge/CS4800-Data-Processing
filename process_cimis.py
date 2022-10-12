@@ -3,10 +3,11 @@
 
 import os
 import csv
-import datetime
+from datetime import datetime
+import json
 
 years_folders = os.listdir("./data")
-final_data = {}
+final_data = []
 cols_1 = {
     "station_id": 0,
     "date": 1,
@@ -85,12 +86,21 @@ for year in years_folders:
             for row in reader:
                 stripped_row = [item.strip() for item in row]
                 date_split = stripped_row[cols_1["date"]].split("/")
-                print(date_split)
-                d = datetime.datetime(date_split[2],date_split[0],date_split[1])
-                d_before = datetime.datetime(2014, 6, 1)
-                if :
-                    print("bef")
-                    pass
+                julian_date = int(stripped_row[cols_1["julian_date"]])
+                d = datetime.strptime(f"{year}-{julian_date}", "%Y-%j")
+                d_before = datetime(2014, 6, 1)
+                if d < d_before:
+                    weather_entry = {}
+                    for key in cols_1:
+                        weather_entry[key] = stripped_row[cols_1[key]]
+                    final_data.append(weather_entry)
                 else:
-                    print("aft")
-                    pass
+                    weather_entry = {}
+                    for key in cols_2:
+                        weather_entry[key] = stripped_row[cols_2[key]]
+                    final_data.append(weather_entry)    
+
+jsonString = json.dumps(final_data)
+jsonFile = open("cimis_data.json", "w")
+jsonFile.write(jsonString)
+jsonFile.close()
